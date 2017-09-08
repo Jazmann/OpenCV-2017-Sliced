@@ -40,17 +40,17 @@ private:
     return arr;
   }
 
-  template <typename _Tp> _Tp **alloc_2d(int m, int n) {
+  template <typename _Tp> _Tp **alloc_2d(int m, int nn) {
     _Tp **arr = new _Tp *[m];
     for (int i = 0; i < m; i++)
-      arr[i] = new _Tp[n];
+      arr[i] = new _Tp[nn];
     return arr;
   }
 
-  template <typename _Tp> _Tp **alloc_2d(int m, int n, _Tp val) {
-    _Tp **arr = alloc_2d<_Tp>(m, n);
+  template <typename _Tp> _Tp **alloc_2d(int m, int nn, _Tp val) {
+    _Tp **arr = alloc_2d<_Tp>(m, nn);
     for (int i = 0; i < m; i++) {
-      for (int j = 0; j < n; j++) {
+      for (int j = 0; j < nn; j++) {
         arr[i][j] = val;
       }
     }
@@ -639,28 +639,28 @@ public:
 
   ~EigenvalueDecomposition() {
     // free some memory
-    delete[] d, e, ort;
+      delete[] d; delete[] e; delete[] ort;
     for (int i = 0; i < n; i++) {
       delete[] H[i];
       delete[] V[i];
     }
-    delete[] H, V;
+      delete[] H; delete[] V;
   }
 
   Mat eigenvalues() {
-    Mat eigenvalues(1, n, CV_64FC1);
+    Mat eigenval(1, n, CV_64FC1);
     for (int i = 0; i < n; i++) {
-      eigenvalues.at<double>(0, i) = d[i];
+      eigenval.at<double>(0, i) = d[i];
     }
-    return eigenvalues;
+    return eigenval;
   }
 
   Mat eigenvectors() {
-    Mat eigenvectors(n, n, CV_64FC1);
+    Mat eigenvec(n, n, CV_64FC1);
     for (int i = 0; i < n; i++)
       for (int j = 0; j < n; j++)
-        eigenvectors.at<double>(i, j) = V[i][j];
-    return eigenvectors;
+        eigenvec.at<double>(i, j) = V[i][j];
+    return eigenvec;
   }
 
   static void  eigensystem(InputArray src, OutputArray eigenvalues, OutputArray eigenvectors)
