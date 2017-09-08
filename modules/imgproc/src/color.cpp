@@ -287,7 +287,9 @@ template<> struct ColorChannel<float>
 template <typename Cvt>
 class CvtColorLoop_Invoker : public ParallelLoopBody
 {
-    typedef typename Cvt::channel_type _Tp;
+    typedef typename Cvt::src_channel_type _Tp;
+    typedef typename Cvt::dst_channel_type _Tp2;
+
 public:
 
     CvtColorLoop_Invoker(const uchar * src_data_, size_t src_step_, uchar * dst_data_, size_t dst_step_, int width_, const Cvt& _cvt) :
@@ -304,7 +306,9 @@ public:
         uchar* yD = dst_data + static_cast<size_t>(range.start) * dst_step;
 
         for( int i = range.start; i < range.end; ++i, yS += src_step, yD += dst_step )
-            cvt(reinterpret_cast<const _Tp*>(yS), reinterpret_cast<_Tp*>(yD), width);
+        {
+            cvt(reinterpret_cast<const _Tp*>(yS), reinterpret_cast<_Tp2*>(yD), width);
+        }
     }
 
 private:
@@ -690,7 +694,8 @@ private:
 
 template<typename _Tp> struct RGB2RGB
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
+
 
     RGB2RGB(int _srccn, int _dstcn, int _blueIdx) : srccn(_srccn), dstcn(_dstcn), blueIdx(_blueIdx) {}
     void operator()(const _Tp* src, _Tp* dst, int n) const
@@ -733,7 +738,7 @@ template<typename _Tp> struct RGB2RGB
 
 template<> struct RGB2RGB<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2RGB(int _srccn, int _dstcn, int _blueIdx) :
         srccn(_srccn), dstcn(_dstcn), blueIdx(_blueIdx)
@@ -870,7 +875,7 @@ template<> struct RGB2RGB<uchar>
 
 struct RGB5x52RGB
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB5x52RGB(int _dstcn, int _blueIdx, int _greenBits)
         : dstcn(_dstcn), blueIdx(_blueIdx), greenBits(_greenBits)
@@ -980,7 +985,7 @@ struct RGB5x52RGB
 
 struct RGB2RGB5x5
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2RGB5x5(int _srccn, int _blueIdx, int _greenBits)
         : srccn(_srccn), blueIdx(_blueIdx), greenBits(_greenBits)
@@ -1076,7 +1081,7 @@ struct RGB2RGB5x5
 template<typename _Tp>
 struct Gray2RGB
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     Gray2RGB(int _dstcn) : dstcn(_dstcn) {}
     void operator()(const _Tp* src, _Tp* dst, int n) const
@@ -1103,7 +1108,7 @@ struct Gray2RGB
 
 struct Gray2RGB5x5
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     Gray2RGB5x5(int _greenBits) : greenBits(_greenBits)
     {
@@ -1224,7 +1229,7 @@ enum
 
 struct RGB5x52Gray
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB5x52Gray(int _greenBits) : greenBits(_greenBits)
     {
@@ -1381,7 +1386,7 @@ struct RGB5x52Gray
 
 template<typename _Tp> struct RGB2Gray
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -1404,7 +1409,7 @@ template<typename _Tp> struct RGB2Gray
 
 template<> struct RGB2Gray<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const int* coeffs) : srccn(_srccn)
     {
@@ -1437,7 +1442,7 @@ template<> struct RGB2Gray<uchar>
 template <>
 struct RGB2Gray<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const int* _coeffs) :
         srccn(_srccn)
@@ -1528,7 +1533,7 @@ struct RGB2Gray<ushort>
 template <>
 struct RGB2Gray<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -1598,7 +1603,7 @@ struct RGB2Gray<float>
 template <>
 struct RGB2Gray<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const int* _coeffs) :
         srccn(_srccn)
@@ -1718,7 +1723,7 @@ struct RGB2Gray<ushort>
 template <>
 struct RGB2Gray<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -1816,7 +1821,7 @@ struct RGB2Gray<float>
 
 template<> struct RGB2Gray<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     RGB2Gray(int _srccn, int blueIdx, const int* _coeffs) : srccn(_srccn)
     {
@@ -1842,7 +1847,7 @@ template<> struct RGB2Gray<ushort>
 
 template<typename _Tp> struct RGB2YCrCb_f
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     RGB2YCrCb_f(int _srccn, int _blueIdx, bool _isCrCb) : srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
     {
@@ -1877,7 +1882,7 @@ template<typename _Tp> struct RGB2YCrCb_f
 template <>
 struct RGB2YCrCb_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2YCrCb_f(int _srccn, int _blueIdx, bool _isCrCb) :
         srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -1945,7 +1950,7 @@ struct RGB2YCrCb_f<float>
 template <>
 struct RGB2YCrCb_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2YCrCb_f(int _srccn, int _blueIdx, bool _isCrCb) :
         srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2049,7 +2054,7 @@ struct RGB2YCrCb_f<float>
 
 template<typename _Tp> struct RGB2YCrCb_i
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     RGB2YCrCb_i(int _srccn, int _blueIdx, bool _isCrCb)
         : srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2086,7 +2091,7 @@ template<typename _Tp> struct RGB2YCrCb_i
 template <>
 struct RGB2YCrCb_i<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2YCrCb_i(int _srccn, int _blueIdx, bool _isCrCb)
         : srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2183,7 +2188,7 @@ struct RGB2YCrCb_i<uchar>
 template <>
 struct RGB2YCrCb_i<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     RGB2YCrCb_i(int _srccn, int _blueIdx, bool _isCrCb)
         : srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2309,7 +2314,7 @@ struct RGB2YCrCb_i<ushort>
 template <>
 struct RGB2YCrCb_i<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2YCrCb_i(int _srccn, int _blueIdx, bool _isCrCb)
         : srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2475,7 +2480,7 @@ struct RGB2YCrCb_i<uchar>
 template <>
 struct RGB2YCrCb_i<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     RGB2YCrCb_i(int _srccn, int _blueIdx, bool _isCrCb)
         : srccn(_srccn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2611,7 +2616,7 @@ struct RGB2YCrCb_i<ushort>
 
 template<typename _Tp> struct YCrCb2RGB_f
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     YCrCb2RGB_f(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2652,7 +2657,7 @@ template<typename _Tp> struct YCrCb2RGB_f
 template <>
 struct YCrCb2RGB_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     YCrCb2RGB_f(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2728,7 +2733,7 @@ struct YCrCb2RGB_f<float>
 template <>
 struct YCrCb2RGB_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     YCrCb2RGB_f(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2845,7 +2850,7 @@ struct YCrCb2RGB_f<float>
 
 template<typename _Tp> struct YCrCb2RGB_i
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     YCrCb2RGB_i(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2889,7 +2894,7 @@ template<typename _Tp> struct YCrCb2RGB_i
 template <>
 struct YCrCb2RGB_i<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     YCrCb2RGB_i(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -2997,7 +3002,7 @@ struct YCrCb2RGB_i<uchar>
 template <>
 struct YCrCb2RGB_i<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     YCrCb2RGB_i(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -3142,7 +3147,7 @@ struct YCrCb2RGB_i<ushort>
 template <>
 struct YCrCb2RGB_i<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     YCrCb2RGB_i(int _dstcn, int _blueIdx, bool _isCrCb)
         : dstcn(_dstcn), blueIdx(_blueIdx), isCrCb(_isCrCb)
@@ -3491,7 +3496,7 @@ static const float XYZ2sRGB_D65[] =
 
 template<typename _Tp> struct RGB2XYZ_f
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     RGB2XYZ_f(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -3528,7 +3533,7 @@ template<typename _Tp> struct RGB2XYZ_f
 template <>
 struct RGB2XYZ_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2XYZ_f(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -3599,7 +3604,7 @@ struct RGB2XYZ_f<float>
 template <>
 struct RGB2XYZ_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2XYZ_f(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -3710,7 +3715,7 @@ struct RGB2XYZ_f<float>
 
 template<typename _Tp> struct RGB2XYZ_i
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     RGB2XYZ_i(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -3755,7 +3760,7 @@ template<typename _Tp> struct RGB2XYZ_i
 template <>
 struct RGB2XYZ_i<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2XYZ_i(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -3861,7 +3866,7 @@ struct RGB2XYZ_i<uchar>
 template <>
 struct RGB2XYZ_i<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     RGB2XYZ_i(int _srccn, int blueIdx, const float* _coeffs) : srccn(_srccn)
     {
@@ -3994,7 +3999,7 @@ struct RGB2XYZ_i<ushort>
 
 template<typename _Tp> struct XYZ2RGB_f
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     XYZ2RGB_f(int _dstcn, int _blueIdx, const float* _coeffs)
     : dstcn(_dstcn), blueIdx(_blueIdx)
@@ -4035,7 +4040,7 @@ template<typename _Tp> struct XYZ2RGB_f
 template <>
 struct XYZ2RGB_f<float>
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     XYZ2RGB_f(int _dstcn, int _blueIdx, const float* _coeffs)
     : dstcn(_dstcn), blueIdx(_blueIdx)
@@ -4157,7 +4162,7 @@ struct XYZ2RGB_f<float>
 
 template<typename _Tp> struct XYZ2RGB_i
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     XYZ2RGB_i(int _dstcn, int _blueIdx, const int* _coeffs)
     : dstcn(_dstcn), blueIdx(_blueIdx)
@@ -4206,7 +4211,7 @@ template<typename _Tp> struct XYZ2RGB_i
 template <>
 struct XYZ2RGB_i<uchar>
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     XYZ2RGB_i(int _dstcn, int _blueIdx, const int* _coeffs)
     : dstcn(_dstcn), blueIdx(_blueIdx)
@@ -4324,7 +4329,7 @@ struct XYZ2RGB_i<uchar>
 template <>
 struct XYZ2RGB_i<ushort>
 {
-    typedef ushort channel_type;
+    typedef ushort src_channel_type; typedef ushort dst_channel_type;
 
     XYZ2RGB_i(int _dstcn, int _blueIdx, const int* _coeffs)
     : dstcn(_dstcn), blueIdx(_blueIdx)
@@ -4479,7 +4484,7 @@ struct XYZ2RGB_i<ushort>
 
 struct RGB2HSV_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2HSV_b(int _srccn, int _blueIdx, int _hrange)
     : srccn(_srccn), blueIdx(_blueIdx), hrange(_hrange)
@@ -4547,7 +4552,7 @@ struct RGB2HSV_b
 
 struct RGB2HSV_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2HSV_f(int _srccn, int _blueIdx, float _hrange)
     : srccn(_srccn), blueIdx(_blueIdx), hrange(_hrange) {}
@@ -4596,7 +4601,7 @@ struct RGB2HSV_f
 
 struct HSV2RGB_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     HSV2RGB_f(int _dstcn, int _blueIdx, float _hrange)
     : dstcn(_dstcn), blueIdx(_blueIdx), hscale(6.f/_hrange) {
@@ -4807,7 +4812,7 @@ struct HSV2RGB_f
 
 struct HSV2RGB_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     HSV2RGB_b(int _dstcn, int _blueIdx, int _hrange)
     : dstcn(_dstcn), cvt(3, _blueIdx, (float)_hrange)
@@ -5028,7 +5033,7 @@ struct HSV2RGB_b
 
 struct RGB2HLS_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2HLS_f(int _srccn, int _blueIdx, float _hrange)
     : srccn(_srccn), blueIdx(_blueIdx), hscale(_hrange/360.f) {
@@ -5189,7 +5194,7 @@ struct RGB2HLS_f
 
 struct RGB2HLS_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2HLS_b(int _srccn, int _blueIdx, int _hrange)
     : srccn(_srccn), cvt(3, _blueIdx, (float)_hrange)
@@ -5377,7 +5382,7 @@ struct RGB2HLS_b
 
 struct HLS2RGB_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     HLS2RGB_f(int _dstcn, int _blueIdx, float _hrange)
     : dstcn(_dstcn), blueIdx(_blueIdx), hscale(6.f/_hrange) {
@@ -5597,7 +5602,7 @@ struct HLS2RGB_f
 
 struct HLS2RGB_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     HLS2RGB_b(int _dstcn, int _blueIdx, int _hrange)
     : dstcn(_dstcn), cvt(3, _blueIdx, (float)_hrange)
@@ -6219,7 +6224,7 @@ static inline void trilinearPackedInterpolate(const v_uint16x8& inX, const v_uin
 
 struct RGB2Lab_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2Lab_b(int _srccn, int blueIdx, const float* _coeffs,
               const float* _whitept, bool _srgb)
@@ -6282,7 +6287,7 @@ struct RGB2Lab_b
 
 struct RGB2Lab_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2Lab_f(int _srccn, int _blueIdx, const float* _coeffs,
               const float* _whitept, bool _srgb)
@@ -6473,7 +6478,7 @@ struct RGB2Lab_f
 // Performs conversion in floats
 struct Lab2RGBfloat
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     Lab2RGBfloat( int _dstcn, int _blueIdx, const float* _coeffs,
               const float* _whitept, bool _srgb )
@@ -7079,7 +7084,7 @@ struct Lab2RGBinteger
 
 struct Lab2RGB_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     Lab2RGB_f( int _dstcn, int _blueIdx, const float* _coeffs,
               const float* _whitept, bool _srgb )
@@ -7098,7 +7103,7 @@ struct Lab2RGB_f
 
 struct Lab2RGB_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     Lab2RGB_b( int _dstcn, int _blueIdx, const float* _coeffs,
                const float* _whitept, bool _srgb )
@@ -7338,7 +7343,7 @@ struct Lab2RGB_b
 
 struct RGB2Luv_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     RGB2Luv_f( int _srccn, int blueIdx, const float* _coeffs,
                const float* whitept, bool _srgb )
@@ -7643,7 +7648,7 @@ struct RGB2Luv_f
 
 struct Luv2RGB_f
 {
-    typedef float channel_type;
+    typedef float src_channel_type; typedef float dst_channel_type;
 
     Luv2RGB_f( int _dstcn, int blueIdx, const float* _coeffs,
               const float* whitept, bool _srgb )
@@ -7879,7 +7884,7 @@ struct Luv2RGB_f
 
 struct RGB2Luv_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     RGB2Luv_b( int _srccn, int blueIdx, const float* _coeffs,
                const float* _whitept, bool _srgb )
@@ -8081,7 +8086,7 @@ struct RGB2Luv_b
 
 struct Luv2RGB_b
 {
-    typedef uchar channel_type;
+    typedef uchar src_channel_type; typedef uchar dst_channel_type;
 
     Luv2RGB_b( int _dstcn, int blueIdx, const float* _coeffs,
                const float* _whitept, bool _srgb )
@@ -8883,7 +8888,7 @@ inline void cvtYUV422toRGBA(uchar * dst_data, size_t dst_step, const uchar * src
 template<typename _Tp>
 struct RGBA2mRGBA
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     void operator()(const _Tp* src, _Tp* dst, int n) const
     {
@@ -8908,7 +8913,7 @@ struct RGBA2mRGBA
 template<typename _Tp>
 struct mRGBA2RGBA
 {
-    typedef _Tp channel_type;
+    typedef _Tp src_channel_type; typedef _Tp dst_channel_type;
 
     void operator()(const _Tp* src, _Tp* dst, int n) const
     {
