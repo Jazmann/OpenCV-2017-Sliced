@@ -52,6 +52,10 @@ enum
     KERNEL_INTEGER      = 8  // all the kernel coefficients are integer numbers
 };
 
+template <typename Cvt> CV_EXPORTS_W void CvtColorLoop(const Mat& src, Mat& dst, const Cvt& cvt);
+
+
+
 /*!
  The Base Class for 1D or Row-wise Filters
 
