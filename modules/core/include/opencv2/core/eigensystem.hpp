@@ -1,8 +1,6 @@
 #ifndef __EIGENSYSTEM_HPP__
 #define __EIGENSYSTEM_HPP__
 
-#include "opencv2/core.hpp"
-
 using namespace std;
 using namespace cv;
 /**
