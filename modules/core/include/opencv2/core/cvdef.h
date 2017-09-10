@@ -395,6 +395,19 @@ Cv64suf;
 #  endif
 #endif
 
+/****************************************************************************************\
+ *                       C++ 11 Register and Std Lib Macros                              *
+\****************************************************************************************/
+
+#ifdef CV_CXX11
+// Compiling in at least C++11 mode.
+#  define _STD
+#  define REGISTER
+# else
+#  define _STD std::
+#  define REGISTER register
+# endif
+
 
 /****************************************************************************************\
 *                                    C++ Move semantics                                  *
