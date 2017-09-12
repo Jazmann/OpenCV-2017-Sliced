@@ -15,7 +15,7 @@
 // This section describes OpenCV logging utilities.
 //
 //! @{
-
+namespace cv {
 namespace utils {
 namespace logging {
 
@@ -78,7 +78,8 @@ enum LogLevel {
 
 
 }} // namespace
-
+    
+} //namespace cv
 //! @}
 
 #endif // OPENCV_LOGGING_HPP
